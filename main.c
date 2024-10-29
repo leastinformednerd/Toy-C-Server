@@ -95,13 +95,20 @@ void try_handle_connection(int sock) {
         return;
     }
 
-    thrd_t _thread_id;
+    thrd_t thread_id;
 
-    thrd_create(
-        &_thread_id,
+    thrd_t spawn_result = thrd_create(
+        &thread_id,
         process_connection,
         (void*) curfd
     );
+
+    if (spawn_result != thrd_success) {
+        close(curfd);
+        return;
+    }
+
+    thrd_detach(thread_id);
 }
 
 int main() {
